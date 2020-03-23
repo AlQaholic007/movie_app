@@ -414,7 +414,8 @@
                 .done(function (data) {
                   if (data.event) {
                     let heartButton = $(`#${movieId}`);
-                    heartButton.css("color") = (heartButton.css("color") == "red") ? "grey" : "red";
+                    let newColor = (heartButton.css("color") == "red") ? "grey" : "red";
+                    heartButton.css("color", newColor) 
                     show_notification(data.msg, "success");
                   } else {
                     show_notification(data.msg, "danger");
@@ -612,7 +613,8 @@
                     .done(function (data) {
                       if (data.event) {
                         let heartButton = $(`#${movieId}`);
-                        heartButton.css("color") = (heartButton.css("color") == "red") ? "grey" : "red";
+                        let newColor = (heartButton.css("color") == "red") ? "grey" : "red";
+                        heartButton.css("color", newColor); 
                         show_notification(data.msg, "success");
                       } else {
                         show_notification(data.msg, "danger");
