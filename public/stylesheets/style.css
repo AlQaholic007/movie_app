@@ -570,3 +570,7 @@ header p {
 .sort-btn.active {
 	color:white
 }
+
+.tab-section {
+	font-size: 135%;
+}

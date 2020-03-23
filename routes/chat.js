@@ -5,6 +5,7 @@ var formParser = require("../utils/form-parser");
 var mongoose = require("mongoose");
 var User = require("../utils/models/user");
 var Room = require("../utils/models/room");
+var guid = require("guid");
 
 router.get("/", function(req, res, next) {
   User.find({}).exec((error, users) => {
@@ -28,7 +29,7 @@ router.get("/:userid", function(req, res, next) {
   User.findOne({ id: req.params.userid }).exec((error, chatUser) => {
     if (!chatUser) return res.status(404).send("No user found!");
     req.session.socket = {};
-    let chatRoomId = req.session.user.chatRooms[chatUser.id];
+    let chatRoomId = req.session.user.chatRooms && req.session.user.chatRooms[chatUser.id];
     if (chatRoomId) {
       Room.findOne({ id: chatRoomId }).exec((err, chatRoom) => {
         req.session.socket.room = chatRoomId,
@@ -47,11 +48,11 @@ router.get("/:userid", function(req, res, next) {
       });
 
       newChatRoom.save((err, newChatRoom) => {
-        chatUser.chats[req.session.user.id] = newChatRoom.id;
+        chatUser.chatRooms[req.session.user.id] = newChatRoom.id;
         chatUser.markModified("chatRooms");
         chatUser.save((err, savedChatUser) => {
           User.findOne({ id: req.session.user.id }).exec((err, reqUser) => {
-            reqUser.chats[savedChatUser.id] = newChatRoom.id;
+            reqUser.chatRooms[savedChatUser.id] = newChatRoom.id;
             reqUser.markModified("chatRooms");
             reqUser.save((err, savedReqUser) => {
               res.render("chat/room", {
