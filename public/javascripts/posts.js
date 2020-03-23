@@ -350,7 +350,7 @@
             </div>
             <br>
             <br>
-            <div class="gram-card-image">
+            <div class="gram-card-image" id="${p.id}" onclick="toggleFav(event)">
               ${p.poster_path ? `${
                                       `<center>
                                             <img src="${p.poster_path}" width="100%"> 
@@ -410,6 +410,40 @@
             .fail(function (data) {
               show_notification("Some error while adding movie to watch list", "danger");
             });
+        }
+        let touchTime = 0;
+        let lastClickedId = "not clicked yet";
+        function toggleFav(event) {
+          if(touchTime == 0) {
+            touchTime = Date.now();
+            lastClickedId = event.target.id;
+          } else {
+            if((Date.now() - touchTime) < 750 && lastClickedId == event.target.id) {
+              touchTime = 0;
+              lastClickedId = "not clicked yet";
+              let movieId = event.target.id
+              $.ajax({
+                method: "POST",
+                url: "/api/v1/favorite/add?cache=" + Math.random(),
+                data: {
+                  movieId
+                }
+              })
+                .done(function (data) {
+                  if (data.event) {
+                    show_notification(data.msg, "success");
+                  } else {
+                    show_notification(data.msg, "danger");
+                  }
+                })
+                .fail(function (data) {
+                  show_notification("Some error while removing from watch list", "danger");
+                });
+            } else {
+              touchTime = Date.now();
+              lastClickedId = event.target.id;
+            }
+          }
         }
       })
       let searchInput = $('#query');
@@ -489,7 +523,7 @@
                 </div>
                 <br>
                 <br>
-                <div class="gram-card-image">
+                <div class="gram-card-image" id="${p.id}" onclick="toggleFav(event)">
                   ${p.poster_path ? `${
                                           `<center>
                                                 <img src="${p.poster_path}" width="100%"> 
@@ -550,6 +584,41 @@
                 .fail(function (data) {
                   show_notification("Some error while adding movie to watch list", "danger");                
                 });
+            }
+
+            let touchTime = 0;
+            let lastClickedId = "not clicked yet";
+            function toggleFav(event) {
+              if(touchTime == 0) {
+                touchTime = Date.now();
+                lastClickedId = event.target.id;
+              } else {
+                if((Date.now() - touchTime) < 750 && lastClickedId == event.target.id) {
+                  touchTime = 0;
+                  lastClickedId = "not clicked yet";
+                  let movieId = event.target.id
+                  $.ajax({
+                    method: "POST",
+                    url: "/api/v1/favorite/add?cache=" + Math.random(),
+                    data: {
+                      movieId
+                    }
+                  })
+                    .done(function (data) {
+                      if (data.event) {
+                        show_notification(data.msg, "success");
+                      } else {
+                        show_notification(data.msg, "danger");
+                      }
+                    })
+                    .fail(function (data) {
+                      show_notification("Some error while removing from watch list", "danger");
+                    });
+                } else {
+                  touchTime = Date.now();
+                  lastClickedId = event.target.id;
+                }
+              }
             }
           })
         }
