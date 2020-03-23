@@ -413,9 +413,7 @@
               })
                 .done(function (data) {
                   if (data.event) {
-                    let heartButton = $(`#${movieId}`);
-                    let newColor = (heartButton.css("color") == "red") ? "grey" : "red";
-                    heartButton.css("color", newColor) 
+                    $(`#${movieId}`).css("color", data.msg == "Added to watch list" ? "red" : "grey");
                     show_notification(data.msg, "success");
                   } else {
                     show_notification(data.msg, "danger");
@@ -612,9 +610,7 @@
                   })
                     .done(function (data) {
                       if (data.event) {
-                        let heartButton = $(`#${movieId}`);
-                        let newColor = (heartButton.css("color") == "red") ? "grey" : "red";
-                        heartButton.css("color", newColor); 
+                        $(`#${movieId}`).css("color", data.msg == "Added to watch list" ? "red" : "grey");
                         show_notification(data.msg, "success");
                       } else {
                         show_notification(data.msg, "danger");
