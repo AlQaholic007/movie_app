@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+  <%- include('../head') -%>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/moment.css">
+  <body>
+    <%- include("../navbar") %>
+    <style>
+    #sidebar,
+    #main {
+      background: #fff;
+    }
+    </style>
+    <br><br><br>
+    <%- include('../sidebar') %>
+    <div class="col-xs-12 col-sm-9 col-lg-10" style="margin:auto" id="main">
+
+        <div class="row profile">
+        <div class="col-md-3">
+          <div class="profile-sidebar">
+            <div class="profile-userpic">
+              <img src="<%= u.profile_picture %>" class="img-responsive" alt="">
+            </div>
+            <div class="profile-usertitle">
+              <div class="profile-usertitle-name">
+                <a href="<%= u.profile_url %>">@<%= u.username %></a><br>
+                (<%= u.name %>)
+              </div>
+              <div class="profile-usertitle-job">
+                <%= u.user_status %> since <%= u.since %>
+              </div>
+            </div>
+            <div class="profile-userbuttons">
+              <div class="row">
+              <% if (u.id != user.id) {%><div class="col-md-6"><a type="button" href="/chat/<%= u.id %>" style="margin-top:5px" class="btn btn-primary btn-sm">Message</a></div><% } %>
+              <% if(u.email) { %><div class="col-md-6"><a type="button" style="margin-top:5px" href="mailto:<%= u.email %>" class="btn btn-primary btn-sm">Email</a></div><% } %>
+              </div>
+            </div>
+            <div class="profile-usermenu">
+              <ul class="nav">
+                <li name="watchList" class="tab active">
+                  <a href="#">
+                    <i class="fa fa-heart"></i>
+                    Watch List
+                  </a>
+                </li>
+                <li name="Reviews" class="tab">
+                  <a href="#">
+                  <i class="fa fa-film"></i>
+                  Reviews </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div id="Reviews" style="display: none" class="profile-content tabs">
+                <h2>Posts</h2><br>
+                <div class="row">
+                  <%- u.posts.map(p => `
+                  <div class="col-md-6">
+                    <div class="gram-card">
+                      <div class="gram-card-header">
+                        <h4>
+                          <a class="gram-card-content-user" href="">${p.title}</a>
+                        </h4>
+                      </div>
+                      <br>
+                      <br>
+                      ${p.static_url ? ((["jpg","png","jpeg","gif"].includes(p.post.type)) ? `
+                        <div class="gram-card-image">
+                          <center>
+                            <img src="${p.static_url}" width="100%">
+                          </center>
+                        </div>
+                        ` : `
+                        <video src="${p.static_url}" id="${p._id}" class="post img-responsive" controls></video>
+                        ` ): ""}
+                      <div class="gram-card-content">
+                        <p>${p.caption}</p>
+                        <span class="label label-info">${p.category}</span><br><br>
+                    </div>
+                  </div>
+                  </div>
+                `).join("") %>
+                </div>
+          </div>
+          <div id="watchList" class="profile-content tabs">
+            <h2>Watch List</h2>
+            <div class="row">
+              <%- u.watchList.map(r => `
+              <div class="col-md-6" id="${r.id}">
+                <div class="gram-card">
+                  <div class="gram-card-header">
+                    <h4>
+                      <a class="gram-card-content-user" href="">${r.title}</a>
+                    </h4>
+                  </div>
+                  <br>
+                  <br>
+                  <div class="gram-card-image">
+                    <center>
+                      <img src="https://image.tmdb.org/t/p/w500${r.poster_path}" width="100%" onclick="removeFav(event)" id="fav-${r.id}">
+                    </center>
+                  </div>
+                  <div class="gram-card-content">
+                    <p>${r.overview}</p>
+                    <span class="label label-info">${r.genre}</span><br><br>
+
+                  <p><i class="fa fa-star" style="color: #f9a602"></i> ${r.vote_average}<br><i class="fa fa-calendar" style="color: green"></i>&nbsp; ${r.release_date}</p>
+
+
+                </div>
+              </div>
+              </div>
+            `).join("") %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="notify_message" class="notify_message-success">
+    	<center>Follow @<%= user.username %>!</center>
+    </div>
+    <br>
+    <br>
+    <%- include('../footer') -%>
+    <%- include('../tabs') -%>
+    <script>
+    var tabs = $(".tab");
+    tabs.on("click", function(e) {
+      let tab = this;
+      e.preventDefault();
+      tabs.removeClass("active");
+      $(tab).addClass("active");
+      $(".tabs").fadeOut(500,function() {
+        $("#" + $(tab).attr("name")).delay(500).fadeIn();
+      });
+      return false;
+    });
+  </script>
+  </body>
+  <script type="text/javascript" src="/javascripts/follow.js"></script>
+  <script>
+    var touchTime = 0;
+    var lastClickedId = "not clicked yet";
+    function removeFav(event) {
+      if(touchTime == 0) {
+        touchTime = Date.now();
+        lastClickedId = event.target.id;
+      } else {
+        if((Date.now() - touchTime) < 750 && lastClickedId == event.target.id) {
+          touchTime = 0;
+          lastClickedId = "not clicked yet";
+          let toRemoveId = event.target.id.split("-")[1];
+          $(`#${toRemoveId}`).remove();
+          $.ajax({
+            method: "POST",
+            url: "/api/v1/favorite/add?cache=" + Math.random(),
+            data: {
+              movieId: toRemoveId
+            }
+          })
+            .done(function (data) {
+              if (data.event) {
+                show_notification(data.msg, "success");
+              } else {
+                show_notification(data.msg, "danger");
+              }
+            })
+            .fail(function (data) {
+              show_notification("Some error while removing from watch list", "danger");
+            });
+        } else {
+          touchTime = Date.now();
+          lastClickedId = event.target.id;
+        }
+      }
+      
+      
+
+     
+    }
+  </script>
+</html>
