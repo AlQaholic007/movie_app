@@ -350,7 +350,7 @@
             </div>
             <br>
             <br>
-            <div class="gram-card-image" id="${"fav-" + p.id}" onclick="toggleFav(event)">
+            <div class="gram-card-image fav-box" id="${"fav-" + p.id}">
               ${p.poster_path ? `${
                                       `<center>
                                             <img src="${p.poster_path}" width="100%"> 
@@ -389,18 +389,21 @@
         });
         $(".favorite-button-box").off("click");
         $(".favorite-button-box").on("click", favoriteById);
+        $(".fav-box").off("click");
+        $(".fav-box").on("click", toggleFav);
+
 
         let touchTime = 0;
         let lastClickedId = "not clicked yet";
-        function toggleFav(event) {
+        function toggleFav() {
           if(touchTime == 0) {
             touchTime = Date.now();
-            lastClickedId = event.target.id;
+            lastClickedId = this.id;
           } else {
-            if((Date.now() - touchTime) < 750 && lastClickedId == event.target.id) {
+            if((Date.now() - touchTime) < 750 && lastClickedId == this.id) {
               touchTime = 0;
               lastClickedId = "not clicked yet";
-              let movieId = event.target.id.split("-")[1]
+              let movieId = this.id.split("-")[1]
               $.ajax({
                 method: "POST",
                 url: "/api/v1/favorite/add?cache=" + Math.random(),
@@ -422,7 +425,7 @@
                 });
             } else {
               touchTime = Date.now();
-              lastClickedId = event.target.id;
+              lastClickedId = this.id;
             }
           }
         }
@@ -525,7 +528,7 @@
                 </div>
                 <br>
                 <br>
-                <div class="gram-card-image" id="${"fav-"+p.id}" onclick="toggleFav(event)">
+                <div class="gram-card-image fav-box" id="${"fav-"+p.id}">
                   ${p.poster_path ? `${
                                           `<center>
                                                 <img src="${p.poster_path}" width="100%"> 
@@ -564,6 +567,8 @@
             });
             $(".favorite-button-box").off("click");
             $(".favorite-button-box").on("click", favoriteById);
+            $(".fav-box").off("click");
+            $(".fav-box").on("click", toggleFav);
   
             function favoriteById() {
               const elem = this;
@@ -588,15 +593,15 @@
             }
             let touchTime = 0;
             let lastClickedId = "not clicked yet";
-            function toggleFav(event) {
+            function toggleFav() {
               if(touchTime == 0) {
                 touchTime = Date.now();
-                lastClickedId = event.target.id;
+                lastClickedId = this.id;
               } else {
                 if((Date.now() - touchTime) < 750 && lastClickedId == event.target.id) {
                   touchTime = 0;
                   lastClickedId = "not clicked yet";
-                  let movieId = event.target.id.split("-")[1]
+                  let movieId = this.id.split("-")[1]
                   $.ajax({
                     method: "POST",
                     url: "/api/v1/favorite/add?cache=" + Math.random(),
@@ -618,7 +623,7 @@
                     });
                 } else {
                   touchTime = Date.now();
-                  lastClickedId = event.target.id;
+                  lastClickedId = this.id;
                 }
               }
             }
