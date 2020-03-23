@@ -389,28 +389,7 @@
         });
         $(".favorite-button-box").off("click");
         $(".favorite-button-box").on("click", favoriteById);
-  
-        function favoriteById() {
-          const elem = this;
-          $.ajax({
-            method: "POST",
-            url: "/api/v1/favorite/add?cache=" + Math.random(),
-            data: {
-              movieId: this.id
-            }
-          })
-            .done(function (data) {
-              if (data.event) {
-                $(elem).css("color", data.msg == "Added to watch list" ? "red" : "grey");
-                show_notification(data.msg, "success");
-              } else {
-                show_notification(data.msg, "danger");
-              }
-            })
-            .fail(function (data) {
-              show_notification("Some error while adding movie to watch list", "danger");
-            });
-        }
+
         let touchTime = 0;
         let lastClickedId = "not clicked yet";
         function toggleFav(event) {
@@ -446,6 +425,27 @@
               lastClickedId = event.target.id;
             }
           }
+        }
+        function favoriteById() {
+          const elem = this;
+          $.ajax({
+            method: "POST",
+            url: "/api/v1/favorite/add?cache=" + Math.random(),
+            data: {
+              movieId: this.id
+            }
+          })
+            .done(function (data) {
+              if (data.event) {
+                $(elem).css("color", data.msg == "Added to watch list" ? "red" : "grey");
+                show_notification(data.msg, "success");
+              } else {
+                show_notification(data.msg, "danger");
+              }
+            })
+            .fail(function (data) {
+              show_notification("Some error while adding movie to watch list", "danger");
+            });
         }
       })
       let searchInput = $('#query');
@@ -566,7 +566,6 @@
             $(".favorite-button-box").on("click", favoriteById);
   
             function favoriteById() {
-
               const elem = this;
               $.ajax({
                 method: "POST",
@@ -587,7 +586,6 @@
                   show_notification("Some error while adding movie to watch list", "danger");                
                 });
             }
-
             let touchTime = 0;
             let lastClickedId = "not clicked yet";
             function toggleFav(event) {
