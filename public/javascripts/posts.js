@@ -350,7 +350,7 @@
             </div>
             <br>
             <br>
-            <div class="gram-card-image" id="${p.id}" onclick="toggleFav(event)">
+            <div class="gram-card-image" id="${"fav-" + p.id}" onclick="toggleFav(event)">
               ${p.poster_path ? `${
                                       `<center>
                                             <img src="${p.poster_path}" width="100%"> 
@@ -421,7 +421,7 @@
             if((Date.now() - touchTime) < 750 && lastClickedId == event.target.id) {
               touchTime = 0;
               lastClickedId = "not clicked yet";
-              let movieId = event.target.id
+              let movieId = event.target.id.split("-")[1]
               $.ajax({
                 method: "POST",
                 url: "/api/v1/favorite/add?cache=" + Math.random(),
@@ -431,6 +431,8 @@
               })
                 .done(function (data) {
                   if (data.event) {
+                    let heartButton = $(`#${movieId}`);
+                    heartButton.css("color") = (heartButton.css("color") == "red") ? "grey" : "red";
                     show_notification(data.msg, "success");
                   } else {
                     show_notification(data.msg, "danger");
@@ -523,7 +525,7 @@
                 </div>
                 <br>
                 <br>
-                <div class="gram-card-image" id="${p.id}" onclick="toggleFav(event)">
+                <div class="gram-card-image" id="${"fav-"+p.id}" onclick="toggleFav(event)">
                   ${p.poster_path ? `${
                                           `<center>
                                                 <img src="${p.poster_path}" width="100%"> 
@@ -596,7 +598,7 @@
                 if((Date.now() - touchTime) < 750 && lastClickedId == event.target.id) {
                   touchTime = 0;
                   lastClickedId = "not clicked yet";
-                  let movieId = event.target.id
+                  let movieId = event.target.id.split("-")[1]
                   $.ajax({
                     method: "POST",
                     url: "/api/v1/favorite/add?cache=" + Math.random(),
@@ -606,6 +608,8 @@
                   })
                     .done(function (data) {
                       if (data.event) {
+                        let heartButton = $(`#${movieId}`);
+                        heartButton.css("color") = (heartButton.css("color") == "red") ? "grey" : "red";
                         show_notification(data.msg, "success");
                       } else {
                         show_notification(data.msg, "danger");
