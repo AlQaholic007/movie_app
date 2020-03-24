@@ -29,6 +29,7 @@
     else var method = "append";
     running = true;
     if (sort === "feed") {
+      $('.filterDiv').hide();
       $.ajax(`/api/v1/posts?page=${page}`).done(function (posts) {
         running = false;
         posts.reverse();
@@ -186,7 +187,8 @@
           }
         }
       });
-    } else if(sort === "movies") {
+    } else if (sort === "movies") {
+      $('.filterDiv').hide();
       $.ajax({
         "method": "GET",
         "url": "/api/v1/movies/news"
@@ -242,44 +244,7 @@
         load(true);
       })
     } else {
-      $('#posts').before(`
-      <div class="alert alert-dismissible alert-success">
-        <form id="filterForm">
-          <input type="text" id="query" name="query" placeholder="Search something...">
-          <select name="genre" id="genre">
-            <option value="default" selected>By Genre<option>
-            <option value="28">Action</option>
-            <option value="12">Adventure</option>
-            <option value="16">Animation</option>
-            <option value="35">Comedy</option>
-            <option value="80">Crime</option>
-            <option value="99">Documentary</option>
-            <option value="Drama">Drama</option>
-            <option value="10751">Family</option>
-            <option value="14">Fantasy</option>
-            <option value="36">History</option>
-            <option value="27">Horror</option>
-            <option value="10402">Music</option>
-            <option value="9648">Mystery</option>
-            <option value="10749">Romance</option>
-            <option value="878">Sci-Fi</option>
-            <option value="53">Thriller</option>
-            <option value="10752">War</option>
-          </select>
-          <select name="language" id="language">
-            <option value="default" selected>By Language<option>
-            <option value="en">English</option>
-            <option value="hi">Hindi</option>
-          </select>
-          <select name="sortyBy" id="sortBy">
-            <option value="default" selected>Sort By<option>
-            <option value="popularity.desc">Highest Rated</option>
-            <option value="vote_count.desc">Most Voted</option>
-            <option value="revenue.desc">Highest Grossing</option>
-          </select>
-        </form>
-      </div>
-      `)
+      $('.filterDiv').show();
       let genre = $('#genre').val() === "default" ? "" : $('#genre').val();
       let language = $('#language').val() === "default" ? "" : $('#language').val();
       let sortBy = $('#sortBy').val() === "default" ? "" : $('#sortBy').val();
